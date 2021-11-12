@@ -94,17 +94,23 @@ void Game::update(sf::Time t_deltaTime)
 					// set start tile
 					if (sf::Mouse::isButtonPressed(sf::Mouse::Button::Left))
 					{
-						m_start->setColor(m_start->color());
-						m_tiles[i][j].setColor(sf::Color::Green);
-						m_start = &m_tiles[i][j];
+						if (m_tiles[i][j].position() != m_goal->position())
+						{
+							m_start->setColor(m_start->color());
+							m_tiles[i][j].setColor(sf::Color::Green);
+							m_start = &m_tiles[i][j];
+						}
 					}
 
 					// set goal tile
 					else if (sf::Mouse::isButtonPressed(sf::Mouse::Button::Right))
 					{
-						m_goal->setColor(m_start->color());
-						m_tiles[i][j].setColor(sf::Color::Red);
-						m_goal = &m_tiles[i][j];
+						if (m_tiles[i][j].position() != m_start->position())
+						{
+							m_goal->setColor(m_start->color());
+							m_tiles[i][j].setColor(sf::Color::Red);
+							m_goal = &m_tiles[i][j];
+						}
 					}
 				}
 			}

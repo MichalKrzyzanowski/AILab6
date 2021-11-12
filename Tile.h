@@ -7,6 +7,7 @@ class Tile
 {
 private:
 	float m_width; // square shape, same height and width
+	int m_pathCost;
 	sf::RectangleShape m_rect;
 	sf::Color m_color;
 
@@ -19,6 +20,8 @@ public:
 	float width() { return m_width; }
 	sf::FloatRect getGlobalBounds() { return m_rect.getGlobalBounds(); }
 	sf::Color color() { return m_color; }
+
+	int& pathCost() { return m_pathCost; }
 
 	void setPosition(float x, float y) { m_rect.setPosition(x, y); }
 	void setColor(sf::Color color) { m_rect.setFillColor(color); }
