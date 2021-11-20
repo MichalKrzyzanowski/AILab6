@@ -3,6 +3,8 @@
 
 #include <SFML/Graphics.hpp>
 #include <iostream>
+#include <array>
+#include <queue>
 #include "Tile.h"
 
 class Game
@@ -16,11 +18,19 @@ private:
 	void update(sf::Time t_deltaTime);
 	void render();
 	
+	void generateFlowField(Tile* start, Tile* goal);
+
+	void generateCostField(int row, int col);
+
 	sf::RenderWindow m_window;
 
 	bool m_placeWallMode{ false };
+	bool m_showCosts{ false };
 
-	Tile m_tiles[50][50]{};
+	std::array<std::array<Tile*, 50>, 50> m_tiles{ nullptr };
+	std::queue<Tile*> m_openList{};
+
+	sf::Font m_font;
 	
 	Tile* m_start{ nullptr };
 	Tile* m_goal{ nullptr };
