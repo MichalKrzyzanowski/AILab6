@@ -80,7 +80,10 @@ void Game::processEvents()
 		}
 
 		// show vectors
-
+		if (sf::Event::KeyReleased == newEvent.type && sf::Keyboard::Num2 == newEvent.key.code)
+		{
+			m_showVectors = !m_showVectors;
+		}
 	}
 }
 
@@ -121,6 +124,7 @@ void Game::update(sf::Time t_deltaTime)
 						if (m_tiles.at(i).at(j)->position() != m_goal->position())
 						{
 							m_start->setColor(m_start->defaultColor());
+							m_start->updateColor();
 							m_tiles.at(i).at(j)->setColor(sf::Color::Green);
 							m_start = m_tiles.at(i).at(j);
 						}
@@ -154,7 +158,7 @@ void Game::render()
 	{
 		for (int j{}; j < 50; ++j)
 		{
-			m_tiles.at(i).at(j)->render(&m_window, m_showCosts);
+			m_tiles.at(i).at(j)->render(&m_window, m_showCosts, m_showVectors);
 		}
 	}
 
@@ -180,9 +184,6 @@ void Game::generateFlowField(Tile* start, Tile* goal)
 	}
 	m_openList.empty();
 
-	goal->setColor(sf::Color::Red);
-	start->setColor(sf::Color::Green);
-
 	goal->pathCost() = 0;
 	goal->updateText();
 	goal->marked() = true;
@@ -194,6 +195,9 @@ void Game::generateFlowField(Tile* start, Tile* goal)
 		generateCostField(m_openList.front()->rowCol().x, m_openList.front()->rowCol().y);
 		m_openList.pop();
 	}
+
+	goal->setColor(sf::Color::Red);
+	start->setColor(sf::Color::Green);
 }
 
 void Game::generateCostField(int row, int col)
@@ -214,6 +218,7 @@ void Game::generateCostField(int row, int col)
 				{
 					m_tiles.at(currentRow).at(currentCol)->pathCost() = m_tiles.at(row).at(col)->pathCost() + 1;
 					m_tiles.at(currentRow).at(currentCol)->updateText();
+					m_tiles.at(currentRow).at(currentCol)->updateColor();
 					m_tiles.at(currentRow).at(currentCol)->marked() = true;
 					m_openList.push(m_tiles.at(currentRow).at(currentCol));
 				}

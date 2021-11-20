@@ -26,6 +26,7 @@ private:
 
 	bool m_placeWallMode{ false };
 	bool m_showCosts{ false };
+	bool m_showVectors{ false };
 
 	std::array<std::array<Tile*, 50>, 50> m_tiles{ nullptr };
 	std::queue<Tile*> m_openList{};

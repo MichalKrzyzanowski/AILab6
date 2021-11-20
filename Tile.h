@@ -13,6 +13,7 @@ private:
 	sf::Vector2i m_rowCol{};
 	sf::RectangleShape m_rect;
 	sf::Text m_costText;
+	sf::Vertex m_line[2];
 
 	// colors
 	sf::Color m_defaultColor = { 0, 87, 227, 255 };
@@ -22,7 +23,7 @@ public:
 	Tile(float width = 15.0f);
 	
 	void setText(sf::Font& font);
-	void render(sf::RenderWindow* window, bool showNumbers);
+	void render(sf::RenderWindow* window, bool showNumbers, bool showVectors);
 	
 	sf::Vector2f position() { return m_rect.getPosition(); }
 	float width() { return m_width; }
@@ -33,6 +34,7 @@ public:
 	sf::Color pathColor() { return m_pathColor; }
 
 	void updateText() { m_costText.setString(std::to_string(m_pathCost)); }
+	void updateColor();
 
 	int& pathCost() { return m_pathCost; }
 	bool& marked() { return m_marked; }

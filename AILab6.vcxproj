@@ -21,7 +21,6 @@
   <ItemGroup>
     <ClInclude Include="Game.h" />
     <ClInclude Include="Tile.h" />
-    <ClInclude Include="Utilities.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Game.cpp" />
