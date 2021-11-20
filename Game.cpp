@@ -112,8 +112,11 @@ void Game::update(sf::Time t_deltaTime)
 
 					else if (sf::Mouse::isButtonPressed(sf::Mouse::Button::Right))
 					{
-						m_tiles.at(i).at(j)->setColor(m_tiles.at(i).at(j)->defaultColor());
-						generateFlowField(m_start, m_goal);
+						if (m_tiles.at(i).at(j)->color() == sf::Color::Black)
+						{
+							m_tiles.at(i).at(j)->setColor(m_tiles.at(i).at(j)->defaultColor());
+							generateFlowField(m_start, m_goal);
+						}
 					}
 				}
 				else
@@ -121,7 +124,7 @@ void Game::update(sf::Time t_deltaTime)
 					// set start tile
 					if (sf::Mouse::isButtonPressed(sf::Mouse::Button::Left))
 					{
-						if (m_tiles.at(i).at(j)->position() != m_goal->position())
+						if (m_tiles.at(i).at(j)->position() != m_goal->position() && m_tiles.at(i).at(j)->color() != sf::Color::Black)
 						{
 							m_start->setColor(m_start->defaultColor());
 							m_start->updateColor();
@@ -133,7 +136,7 @@ void Game::update(sf::Time t_deltaTime)
 					// set goal tile
 					else if (sf::Mouse::isButtonPressed(sf::Mouse::Button::Right))
 					{
-						if (m_tiles.at(i).at(j)->position() != m_start->position())
+						if (m_tiles.at(i).at(j)->position() != m_start->position() && m_tiles.at(i).at(j)->color() != sf::Color::Black)
 						{
 							m_goal->setColor(m_start->defaultColor());
 							m_tiles.at(i).at(j)->setColor(sf::Color::Red);

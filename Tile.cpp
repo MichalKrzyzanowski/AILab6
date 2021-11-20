@@ -32,7 +32,7 @@ void Tile::render(sf::RenderWindow* window, bool showNumbers, bool showVectors)
 
 void Tile::updateColor()
 {
-	int a = 255 - m_pathCost * 2;
+	int a = 255 - m_pathCost * 4;
 	if (a < 0) a = 0;
 
 	m_rect.setFillColor(sf::Color(m_defaultColor.r, m_defaultColor.g, m_defaultColor.b, a));
