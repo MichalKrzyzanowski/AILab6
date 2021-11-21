@@ -285,9 +285,14 @@ void Game::generatePath()
 {
 	Tile* currentPathTile = m_tiles.at(m_start->pathTile().x).at(m_start->pathTile().y);
 
+	sf::Clock m_timer;
+
 	while (currentPathTile->rowCol() != m_goal->rowCol())
 	{
 		currentPathTile->setColor(currentPathTile->pathColor());
 		currentPathTile = m_tiles.at(currentPathTile->pathTile().x).at(currentPathTile->pathTile().y);
+
+		// break out of the loop if the loop is stuck
+		if (m_timer.getElapsedTime().asSeconds() > 2.0f) break;
 	}
 }
