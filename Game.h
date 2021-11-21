@@ -6,6 +6,7 @@
 #include <array>
 #include <queue>
 #include "Tile.h"
+#include "Utilites.h"
 
 class Game
 {
@@ -18,7 +19,7 @@ private:
 	void update(sf::Time t_deltaTime);
 	void render();
 	
-	void generateFlowField(Tile* start, Tile* goal);
+	void generateFlowField();
 
 	void generateCostField(int row, int col);
 

@@ -19,14 +19,14 @@ Game::Game() :
 		}
 	}
 
-	// initial goal and start
+	// initial m_goal and start
 	m_tiles.at(0).at(0)->setColor(sf::Color::Green);
 	m_start = m_tiles.at(0).at(0);
 
 	m_tiles.at(49).at(49)->setColor(sf::Color::Red);
 	m_goal = m_tiles.at(49).at(49);
 
-	generateFlowField(m_start, m_goal);
+	generateFlowField();
 }
 
 /// <summary>
@@ -106,7 +106,7 @@ void Game::update(sf::Time t_deltaTime)
 							m_tiles.at(i).at(j)->position() != m_goal->position())
 						{
 							m_tiles.at(i).at(j)->setColor(sf::Color::Black);
-							generateFlowField(m_start, m_goal);
+							generateFlowField();
 						}
 					}
 
@@ -115,7 +115,7 @@ void Game::update(sf::Time t_deltaTime)
 						if (m_tiles.at(i).at(j)->color() == sf::Color::Black)
 						{
 							m_tiles.at(i).at(j)->setColor(m_tiles.at(i).at(j)->defaultColor());
-							generateFlowField(m_start, m_goal);
+							generateFlowField();
 						}
 					}
 				}
@@ -133,7 +133,7 @@ void Game::update(sf::Time t_deltaTime)
 						}
 					}
 
-					// set goal tile
+					// set m_goal tile
 					else if (sf::Mouse::isButtonPressed(sf::Mouse::Button::Right))
 					{
 						if (m_tiles.at(i).at(j)->position() != m_start->position() && m_tiles.at(i).at(j)->color() != sf::Color::Black)
@@ -141,7 +141,7 @@ void Game::update(sf::Time t_deltaTime)
 							m_goal->setColor(m_start->defaultColor());
 							m_tiles.at(i).at(j)->setColor(sf::Color::Red);
 							m_goal = m_tiles.at(i).at(j);
-							generateFlowField(m_start, m_goal);
+							generateFlowField();
 						}
 					}
 				}
@@ -168,7 +168,7 @@ void Game::render()
 	m_window.display();
 }
 
-void Game::generateFlowField(Tile* start, Tile* goal)
+void Game::generateFlowField()
 {
 	// reset
 	for (int i{}; i < 50; ++i)
@@ -176,22 +176,30 @@ void Game::generateFlowField(Tile* start, Tile* goal)
 		for (int j{}; j < 50; ++j)
 		{
 			m_tiles.at(i).at(j)->pathCost() = 999;
+			m_tiles.at(i).at(j)->integration() = 999;
+			m_tiles.at(i).at(j)->vector() = sf::Vector2f{};
 			m_tiles.at(i).at(j)->marked() = false;
+
+			m_tiles.at(i).at(j)->updateText();
 
 			// reset color if not black
 			if (m_tiles.at(i).at(j)->color() != sf::Color::Black)
 			{
 				m_tiles.at(i).at(j)->setColor(m_tiles.at(i).at(j)->defaultColor());
+				m_tiles.at(i).at(j)->updateColor();
 			}
+
 		}
 	}
 	m_openList.empty();
 
-	goal->pathCost() = 0;
-	goal->updateText();
-	goal->marked() = true;
+	m_goal->pathCost() = 0;
+	m_goal->integration() = 0;
+	m_goal->vector() = sf::Vector2f{};
+	m_goal->updateText();
+	m_goal->marked() = true;
 
-	m_openList.push(goal);
+	m_openList.push(m_goal);
 
 	while (!m_openList.empty())
 	{
@@ -199,8 +207,8 @@ void Game::generateFlowField(Tile* start, Tile* goal)
 		m_openList.pop();
 	}
 
-	goal->setColor(sf::Color::Red);
-	start->setColor(sf::Color::Green);
+	m_goal->setColor(sf::Color::Red);
+	m_start->setColor(sf::Color::Green);
 }
 
 void Game::generateCostField(int row, int col)
@@ -213,17 +221,20 @@ void Game::generateCostField(int row, int col)
 
 		if (currentRow >= 0 && currentRow < 50 && currentCol >= 0 && currentCol < 50)
 		{
+			Tile* currentTile = m_tiles.at(currentRow).at(currentCol);
 			// not a wall?
-			if (m_tiles.at(currentRow).at(currentCol)->color() != sf::Color::Black)
+			if (currentTile->color() != sf::Color::Black)
 			{
 				// not marked?
-				if (!m_tiles.at(currentRow).at(currentCol)->marked())
+				if (!currentTile->marked())
 				{
-					m_tiles.at(currentRow).at(currentCol)->pathCost() = m_tiles.at(row).at(col)->pathCost() + 1;
-					m_tiles.at(currentRow).at(currentCol)->updateText();
-					m_tiles.at(currentRow).at(currentCol)->updateColor();
-					m_tiles.at(currentRow).at(currentCol)->marked() = true;
-					m_openList.push(m_tiles.at(currentRow).at(currentCol));
+					currentTile->pathCost() = m_tiles.at(row).at(col)->pathCost() + 1;
+					currentTile->updateText();
+					currentTile->updateColor();
+					currentTile->marked() = true;
+					currentTile->integration() = (currentTile->pathCost() * 100) +
+						manhattanDistance(m_goal->position(), currentTile->position());
+					m_openList.push(currentTile);
 				}
 			}
 		}

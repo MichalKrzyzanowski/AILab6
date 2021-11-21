@@ -2,12 +2,15 @@
 #define TILE_H
 
 #include <SFML/Graphics.hpp>
+#include "Utilites.h"
 
 class Tile
 {
 private:
 	float m_width; // square shape, same height and width
 	int m_pathCost;
+	int m_integration;
+	sf::Vector2f m_vector{};
 	bool m_marked{ false };
 
 	sf::Vector2i m_rowCol{};
@@ -16,8 +19,9 @@ private:
 	sf::Vertex m_line[2];
 
 	// colors
-	sf::Color m_defaultColor = { 0, 87, 227, 255 };
-	sf::Color m_pathColor = { 252, 186, 3, 255 };
+	sf::Color m_defaultColor = { 0u, 87u, 227u, 255u };
+	sf::Color m_pathColor = { 252u, 186u, 3u, 255u };
+	sf::Color m_vectorColor = { 200u, 200u, 200u, 150u };
 
 public:
 	Tile(float width = 15.0f);
@@ -37,8 +41,11 @@ public:
 	void updateColor();
 
 	int& pathCost() { return m_pathCost; }
+	int& integration() { return m_integration; }
 	bool& marked() { return m_marked; }
+
 	sf::Vector2i& rowCol() { return m_rowCol; }
+	sf::Vector2f& vector() { return m_vector; }
 
 	void setPosition(float x, float y);
 	void setColor(sf::Color color) { m_rect.setFillColor(color); }
