@@ -1,6 +1,8 @@
 #ifndef UTILITIES_H
 #define UTILITIES_H
 
+#include <algorithm>
+
 inline float manhattanDistance(const sf::Vector2f& a, const sf::Vector2f& b)
 {
 	sf::Vector2i diff{};
@@ -12,6 +14,16 @@ inline float manhattanDistance(const sf::Vector2f& a, const sf::Vector2f& b)
 	if (diff.y < 0) diff.y = -diff.y;
 
 	return diff.x + diff.y;
+}
+
+inline float chebyshevDistance(const sf::Vector2f& a, const sf::Vector2f& b)
+{
+	return std::max(abs(a.x - b.x), abs(a.y - b.y));
+}
+
+inline float euclideanDistance(const sf::Vector2f& a, const sf::Vector2f& b)
+{
+	return sqrtf(((a.x - b.x) * (a.x - b.x)) + ((a.y - b.y) * (a.y - b.y)));
 }
 
 inline sf::Vector2f normalize(const sf::Vector2f& v)

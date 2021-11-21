@@ -22,6 +22,8 @@ private:
 	void generateFlowField();
 
 	void generateCostField(int row, int col);
+	void generateVectorField(int row, int col);
+	void generatePath();
 
 	sf::RenderWindow m_window;
 

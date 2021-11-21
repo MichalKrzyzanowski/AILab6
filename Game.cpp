@@ -16,6 +16,7 @@ Game::Game() :
 			m_tiles.at(i).at(j)->setText(m_font);
 			m_tiles.at(i).at(j)->rowCol() = sf::Vector2i{ i, j };
 			m_tiles.at(i).at(j)->setPosition(m_tiles.at(i).at(j)->width() * i, m_tiles.at(i).at(j)->width() * j);
+			m_tiles.at(i).at(j)->updateVector();
 		}
 	}
 
@@ -130,6 +131,7 @@ void Game::update(sf::Time t_deltaTime)
 							m_start->updateColor();
 							m_tiles.at(i).at(j)->setColor(sf::Color::Green);
 							m_start = m_tiles.at(i).at(j);
+							generateFlowField();
 						}
 					}
 
@@ -175,9 +177,10 @@ void Game::generateFlowField()
 	{
 		for (int j{}; j < 50; ++j)
 		{
-			m_tiles.at(i).at(j)->pathCost() = 999;
-			m_tiles.at(i).at(j)->integration() = 999;
+			m_tiles.at(i).at(j)->pathCost() = 9999;
+			m_tiles.at(i).at(j)->integration() = 9999;
 			m_tiles.at(i).at(j)->vector() = sf::Vector2f{};
+			m_tiles.at(i).at(j)->updateVector();
 			m_tiles.at(i).at(j)->marked() = false;
 
 			m_tiles.at(i).at(j)->updateText();
@@ -196,6 +199,7 @@ void Game::generateFlowField()
 	m_goal->pathCost() = 0;
 	m_goal->integration() = 0;
 	m_goal->vector() = sf::Vector2f{};
+	m_goal->updateVector();
 	m_goal->updateText();
 	m_goal->marked() = true;
 
@@ -204,11 +208,14 @@ void Game::generateFlowField()
 	while (!m_openList.empty())
 	{
 		generateCostField(m_openList.front()->rowCol().x, m_openList.front()->rowCol().y);
+		generateVectorField(m_openList.front()->rowCol().x, m_openList.front()->rowCol().y);
 		m_openList.pop();
 	}
 
 	m_goal->setColor(sf::Color::Red);
 	m_start->setColor(sf::Color::Green);
+
+	generatePath();
 }
 
 void Game::generateCostField(int row, int col)
@@ -221,22 +228,66 @@ void Game::generateCostField(int row, int col)
 
 		if (currentRow >= 0 && currentRow < 50 && currentCol >= 0 && currentCol < 50)
 		{
-			Tile* currentTile = m_tiles.at(currentRow).at(currentCol);
+			Tile* currentNeighbour = m_tiles.at(currentRow).at(currentCol);
+			
 			// not a wall?
-			if (currentTile->color() != sf::Color::Black)
+			if (currentNeighbour->color() != sf::Color::Black)
 			{
 				// not marked?
-				if (!currentTile->marked())
+				if (!currentNeighbour->marked())
 				{
-					currentTile->pathCost() = m_tiles.at(row).at(col)->pathCost() + 1;
-					currentTile->updateText();
-					currentTile->updateColor();
-					currentTile->marked() = true;
-					currentTile->integration() = (currentTile->pathCost() * 100) +
-						manhattanDistance(m_goal->position(), currentTile->position());
-					m_openList.push(currentTile);
+					currentNeighbour->pathCost() = m_tiles.at(row).at(col)->pathCost() + 1;
+					currentNeighbour->marked() = true;
+
+					currentNeighbour->integration() = (currentNeighbour->pathCost() * 100) +
+						manhattanDistance(m_goal->position(), currentNeighbour->position());
+
+					currentNeighbour->updateText();
+					currentNeighbour->updateColor();
+					m_openList.push(currentNeighbour);
 				}
 			}
 		}
+	}
+}
+
+void Game::generateVectorField(int row, int col)
+{
+	Tile* currentTile = m_tiles.at(row).at(col);
+	int lowestIntegration = std::numeric_limits<int>::max();
+
+	for (int direction = 0; direction < 9; direction++)
+	{
+		if (direction == 4) continue;
+		int currentRow = row + ((direction % 3) - 1);
+		int currentCol = col + ((direction / 3) - 1);
+
+		if (currentRow >= 0 && currentRow < 50 && currentCol >= 0 && currentCol < 50)
+		{
+			Tile* currentNeighbour = m_tiles.at(currentRow).at(currentCol);
+			
+			// not a wall?
+			if (currentNeighbour->color() != sf::Color::Black)
+			{
+				if (currentNeighbour->integration() < lowestIntegration)
+				{
+					lowestIntegration = currentNeighbour->integration();
+					currentTile->pathTile() = currentNeighbour->rowCol();
+					currentTile->vector() = currentNeighbour->position();
+					currentTile->updateVector();
+				}
+			}
+		}
+	}
+}
+
+void Game::generatePath()
+{
+	Tile* currentPathTile = m_tiles.at(m_start->pathTile().x).at(m_start->pathTile().y);
+
+	while (currentPathTile->rowCol() != m_goal->rowCol())
+	{
+		currentPathTile->setColor(currentPathTile->pathColor());
+		currentPathTile = m_tiles.at(currentPathTile->pathTile().x).at(currentPathTile->pathTile().y);
 	}
 }

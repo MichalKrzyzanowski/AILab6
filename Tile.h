@@ -14,6 +14,7 @@ private:
 	bool m_marked{ false };
 
 	sf::Vector2i m_rowCol{};
+	sf::Vector2i m_pathTile{};
 	sf::RectangleShape m_rect;
 	sf::Text m_costText;
 	sf::Vertex m_line[2];
@@ -45,9 +46,11 @@ public:
 	bool& marked() { return m_marked; }
 
 	sf::Vector2i& rowCol() { return m_rowCol; }
+	sf::Vector2i& pathTile() { return m_pathTile; }
 	sf::Vector2f& vector() { return m_vector; }
 
 	void setPosition(float x, float y);
+	void updateVector();
 	void setColor(sf::Color color) { m_rect.setFillColor(color); }
 
 };

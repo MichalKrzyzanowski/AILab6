@@ -41,13 +41,18 @@ void Tile::updateColor()
 
 void Tile::setPosition(float x, float y)
 {
+	m_rect.setPosition(x, y);
+	m_costText.setPosition(x, y);
+
+	m_line[0].position = sf::Vector2f{ x + m_width / 2.0f, y + m_width / 2.0f };
+}
+
+void Tile::updateVector()
+{
 	m_vector = normalize(m_vector);
 
 	m_vector.x *= m_width / 2.0f;
 	m_vector.y *= m_width / 2.0f;
 
-	m_rect.setPosition(x, y);
-	m_costText.setPosition(x, y);
-	m_line[0].position = sf::Vector2f{ x + m_width / 2.0f, y + m_width / 2.0f };
-	m_line[1].position = m_vector;
+	m_line[1].position = m_line[0].position - m_vector;
 }
